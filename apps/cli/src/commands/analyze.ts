@@ -8,16 +8,21 @@ export default new Command()
   .option("-r, --repo <path>", "Path to repository")
   .option("-o, --output <format>", "Output format (text, json, table)", "text")
   .action(async (options: { repo?: string; output?: string }) => {
-    const result = await analyzeRepository(options.repo || process.cwd());
-    const format = parseOutputFormat(options.output);
-    
-    if (result.warning) {
-      console.warn(`\n⚠️  Warning: ${result.warning}\n`);
-    }
-    
-    outputProjectAnalysis(result.analysis, format);
-    
-    if (result.persisted) {
-      console.log(`\n✓ Snapshot persisted (ID: ${result.snapshotId})\n`);
+    try {
+      const result = await analyzeRepository(options.repo || process.cwd());
+      const format = parseOutputFormat(options.output);
+      
+      if (result.warning) {
+        console.warn(`\n⚠ Warning: ${result.warning}\n`);
+      }
+      
+      outputProjectAnalysis(result.analysis, format);
+      
+      if (result.persisted) {
+        console.log(`\n✓ Snapshot persisted (ID: ${result.snapshotId})\n`);
+      }
+    } catch (err) {
+      console.error(`Error: ${(err as Error).message}`);
+      process.exitCode = 1;
     }
   });
