@@ -54,7 +54,11 @@ export async function analyzeRepository(repoPath: string): Promise<AnalyzeReposi
   const persistResult = await tryPersistSnapshot(repoPath, snapshot);
   
   return {
-    analysis,
+    analysis: {
+      ...analysis,
+      branch: snapshot.metadata.branch,
+      dirty: snapshot.metadata.dirty,
+    },
     ...persistResult
   };
 }

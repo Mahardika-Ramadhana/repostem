@@ -9,7 +9,12 @@ export default new Command()
   .argument("<filePath>", "File path to analyze")
   .option("-o, --output <format>", "Output format (text, json, table)", "text")
   .action(async (filePath: string, options: { repo?: string; output?: string }) => {
-    const result = await computeFileImpact(options.repo || process.cwd(), filePath);
-    const format = parseOutputFormat(options.output);
-    outputFileImpact(result, format);
+    try {
+      const result = await computeFileImpact(options.repo || process.cwd(), filePath);
+      const format = parseOutputFormat(options.output);
+      outputFileImpact(result, format);
+    } catch (err) {
+      console.error(`Error: ${(err as Error).message}`);
+      process.exitCode = 1;
+    }
   });
